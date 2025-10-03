@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- <link rel="stylesheet" href="/frontend/css/bar.css"> -->
+</head>
+
+<body>
+
+    <div id="sidebar"></div>
+
+
+    <main class="content">
+        <h2>📊 ตรวจสอบการเข้างาน</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ลำดับ</th>
+                    <th>วันที่</th>
+                    <th>สถานะ</th>
+                    <th>หมายเหตุ</th>
+                    <th>บันทึกเมื่อ</th>
+                    <th>การอนุมัติ</th>
+                </tr>
+            </thead>
+            <tbody id="checkwork"></tbody>
+        </table>
+    </main>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/frontend/config/path.js"></script>
+    <script src="/frontend/js/session.js"></script>
+    <script src="/frontend/js/S/chechwork.js"></script>
+
+    <script>
+        checkSession();
+
+        fetch("../../components/sidebar.html")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("sidebar").innerHTML = html;
+
+                // ✅ ใส่ event หลังจากโหลดเสร็จ
+                const menuToggle = document.getElementById("menuToggle");
+                const sidebarMenu = document.querySelector(".sidebar");
+
+                if (menuToggle && sidebarMenu) {
+                    menuToggle.addEventListener("click", () => {
+                        sidebarMenu.classList.toggle("active");
+                    });
+                }
+            })
+            .catch(err => console.error("Sidebar load error:", err));
+    </script>
+
+    <script>getattendance();</script>
+</body>
+
+</html>

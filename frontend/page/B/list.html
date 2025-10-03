@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>จัดการอนุมัติ</title>
+  <!-- <link rel="stylesheet" href="/frontend/css/bar.css"> -->
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      /* align-items: center; */
+      min-height: 100vh; /* ให้เต็มความสูงหน้าจอ */
+    }
+
+    .action-btn {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      margin: 2px;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .action-btn.approve {
+      background: #22c55e;
+      color: #fff;
+    }
+
+    .action-btn.approve:hover {
+      background: #16a34a;
+    }
+
+    .action-btn.reject {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .action-btn.reject:hover {
+      background: #dc2626;
+    }
+
+    main.content {
+      max-width: 1000px;
+      width: 90%;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      border-left: 5px solid #2563eb;
+      padding-left: 10px;
+      color: #1f2937;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: center;
+    }
+
+    thead tr {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    tbody tr:hover {
+      background: #f1f5f9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="sidebar"></div>
+
+  <main class="content">
+    <h2>📋 จัดการการอนุมัติ</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ลำดับ</th>
+          <th>ชื่อ - นามสกุล</th>
+          <th>สายการฝึก</th>
+          <th>รายละเอียด</th>
+        </tr>
+      </thead>
+      <tbody id="list">
+        <!-- ข้อมูลจาก JS -->
+      </tbody>
+    </table>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/frontend/config/path.js"></script>
+  <script src="/frontend/js/session.js"></script>
+  <script src="/frontend/js/B/list.js"></script>
+
+  <script>
+    checkSession();
+
+    fetch("../../components/sidebarB.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar").innerHTML = html;
+
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebarMenu = document.querySelector(".sidebar");
+
+        if (menuToggle && sidebarMenu) {
+          menuToggle.addEventListener("click", () => {
+            sidebarMenu.classList.toggle("active");
+          });
+        }
+      })
+      .catch(err => console.error("Sidebar load error:", err));
+  </script>
+
+  <script src="/frontend/js/B/approve.js"></script>
+  <script>list();</script>
+</body>
+
+</html>

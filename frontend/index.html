@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เข้าสู่ระบบ</title>
+  <link rel="stylesheet" href="/frontend/css/login.css">
+</head>
+<body>
+  <div class="container">
+    <h2>เข้าสู่ระบบ</h2>
+    <form id="loginForm">
+      <label>รหัสนักศึกษา</label>
+      <input type="text" id="iduser" placeholder="รหัสนักศึกษา" required>
+
+      <label>รหัสผ่าน</label>
+      <input type="password" id="password" placeholder="••••••••" required>
+
+      <button type="submit">เข้าสู่ระบบ</button>
+      <p>ยังไม่มีบัญชี? <a href="/frontend/page/register.html">สมัครสมาชิก</a></p>
+    </form>
+    <p id="msg"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/frontend/config/path.js"></script>
+  <script src="/frontend/js/register.js"></script>
+  <script>login();</script>
+</body>
+</html>

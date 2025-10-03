@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        main.content {
+            max-width: 1200px;
+            margin: 30px auto;
+            margin-left: 260px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            border-left: 5px solid #2563eb;
+            padding-left: 10px;
+            color: #000000;
+        }
+
+        h1 {
+            margin-top: 40px;
+            font-size: 1.4rem;
+            border-left: 5px solid #16a34a;
+            padding-left: 10px;
+            color: #ffffff;
+        }
+
+        /* ✅ Cards */
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #374151;
+        }
+
+        .card p {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #111;
+        }
+
+        /* ✅ Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        thead tr {
+            background: #2563eb;
+            color: #fff;
+            text-align: center;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        tbody tr:hover {
+            background: #f1f5f9;
+        }
+
+        .btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 2px;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        /* เอฟเฟกต์ hover */
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .card-link {
+            text-decoration: none;
+            /* เอาขีดเส้นใต้ลิงก์ออก */
+            color: inherit;
+            /* ใช้สีข้อความตาม card */
+            display: block;
+            /* ให้ a ขยายเต็มพื้นที่ */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebar"></div>
+
+    <main class="content">
+        <h2>📊 ภาพรวมการออกฝึก</h2>
+
+        <div class="overview-cards">
+            <a href="/frontend/page/T/noapply.html" class="card-link">
+                <div class="card" style="border-top: 6px solid #ef4444;">
+                    <h3>นักศึกษาที่ยังไม่ออกฝึก</h3>
+                    <p id="Noatwork">0 คน</p>
+                </div>
+            </a>
+
+            <a href="/frontend/page/T/apply.html" class="card-link">
+                <div class="card" style="border-top: 6px solid #2563eb;">
+                    <h3>นักศึกษาที่ออกฝึก</h3>
+                    <p id="studentCount">0 คน</p>
+                </div>
+            </a>
+            <a href="/frontend/page/T/success.html" class="card-link">
+                <div class="card" style="border-top: 6px solid #22c55e;">
+                    <h3>นักศึกษาที่ฝึกสำเร็จ</h3>
+                    <p id="success">0 คน</p>
+                </div>
+            </a>
+
+        </div>
+
+        <h2>📋 รายชื่อนักศึกษา</h2>
+        <label>
+            ปีการศึกษา:
+            <input type="text" id="filterIduser" placeholder="ค้นหาปี..." maxlength="2">
+        </label>
+        <label>
+            รหัสนักศึกษา:
+            <input type="text" id="filterIduser2" placeholder="ค้นหารหัส..." maxlength="9">
+        </label>
+        <label>
+            ชื่อ - นามสกุล:
+            <input type="text" id="filterName" placeholder="ค้นหาชื่อ...">
+        </label>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ลำดับ</th>
+                    <th>รหัสนักศึกษา</th>
+                    <th>ชื่อ - นามสกุล</th>
+                    <th>วันที่ล่าสุด</th>
+                    <th>สถานะ</th>
+                    <th>การอนุมัติ</th>
+                    <th>ดูทั้งหมด</th>
+                </tr>
+            </thead>
+            <tbody id="usertable">
+                <!-- JS เติมข้อมูล -->
+            </tbody>
+        </table>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/frontend/config/path.js"></script>
+    <script src="/frontend/js/session.js"></script>
+    <script>
+        checkSession();
+
+        fetch("../../components/sidebarT.html")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("sidebar").innerHTML = html;
+
+                const menuToggle = document.getElementById("menuToggle");
+                const sidebarMenu = document.querySelector(".sidebar");
+
+                if (menuToggle && sidebarMenu) {
+                    menuToggle.addEventListener("click", () => {
+                        sidebarMenu.classList.toggle("active");
+                    });
+                }
+            })
+            .catch(err => console.error("Sidebar load error:", err));
+
+
+    </script>
+    <script src="/frontend/js/T/dashT.js"></script>
+</body>
+
+</html>

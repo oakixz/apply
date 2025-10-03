@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/frontend/css/bar.css">
+</head>
+<body>
+  
+  
+
+
+  <div class="menu-toggle" id="menuToggle">☰</div>
+
+
+  <nav class="sidebar" id="sidebar">
+    <h1>เมนู</h1>
+    <ul>
+      <li><a href="/frontend/page/T/dashT.html">🏠 หน้าแรก</a></li>
+      <li><a href="/frontend/page/T/datalog.html">📄 ข้อมูลสถานที่ / print</a></li>
+      <li><a href="/frontend/page/T/mngB.html">⚙️ จัดการพี่เลี่ยง</a></li>
+      <!-- <li><a href="#">👤 โปรไฟล์</a></li> -->
+      <!-- <li><a href="#">⚙️ ตั้งค่า</a></li> -->
+      <li><a href="" onclick="logout()">🚪 ออกจากระบบ</a></li>
+    </ul>
+  </nav>
+  <script>
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      document.getElementById("sidebar").classList.toggle("active");
+    });
+  </script>
+
+</body>
+</body>
+</html>

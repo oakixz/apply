@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            background: #f6f7fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            margin: 20px;
+        }
+
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #444;
+        }
+
+        .card p {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .present {
+            border-top: 6px solid #10b981;
+            color: #065f46;
+        }
+
+        .absent {
+            border-top: 6px solid #ef4444;
+            color: #991b1b;
+        }
+
+        .late {
+            border-top: 6px solid #f59e0b;
+            color: #92400e;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebar"></div>
+
+    <main class="content">
+        <h2>📊 ภาพรวมการเข้างานของฉัน</h2>
+        <div class="overview-cards">
+            <div class="card present">
+                <h3>เข้าเรียน/ทำงาน</h3>
+                <p id="presentCount">0</p>
+            </div>
+            <div class="card absent">
+                <h3>ขาด</h3>
+                <p id="absentCount">0</p>
+            </div>
+            <div class="card late">
+                <h3>สาย</h3>
+                <p id="lateCount">0</p>
+            </div>
+        </div>
+
+
+        <h2 style="margin:20px;">⏳ ความคืบหน้าการฝึกงาน</h2>
+        <div style="margin:20px;">
+            <div style="background:#e5e7eb;border-radius:20px;height:24px;overflow:hidden;">
+                <div id="progressBar" style="background:#2563eb;height:100%;width:0%;color:#fff;
+                text-align:center;line-height:24px;font-size:14px;transition:width 0.5s;">
+                    0%
+                </div>
+            </div>
+            <p id="progressText" style="margin-top:6px;color:#444;"></p>
+        </div>
+    </main>
+
+    <script src="/frontend/config/path.js"></script>
+    <script src="/frontend/js/session.js"></script>
+
+    <script>
+        checkSession();
+
+
+        fetch("../../components/sidebar.html")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("sidebar").innerHTML = html;
+
+                const menuToggle = document.getElementById("menuToggle");
+                const sidebarMenu = document.querySelector(".sidebar");
+                if (menuToggle && sidebarMenu) {
+                    menuToggle.addEventListener("click", () => {
+                        sidebarMenu.classList.toggle("active");
+                    });
+                }
+            });
+
+
+        async function loadOverview() {
+            try {
+                const res = await fetch(`${api_user}/countuser`, {
+                    credentials: "include"
+                });
+                const data = await res.json();
+                const count = data.data;
+
+                console.log(count);
+
+                if (res.ok) {
+
+                    const e1 = count.pn + count.ey;
+                    const e2 = count.ln + count.ey;
+                    const e3 = count.ey + count.en;
+
+                    const sum = e1 + e2 + e3;
+                    // console.log(sum);
+
+
+
+
+
+                    document.getElementById("presentCount").innerText = data.data.py || 0;
+                    document.getElementById("absentCount").innerText = sum || 0;
+                    document.getElementById("lateCount").innerText = data.data.ly || 0;
+                }
+
+            } catch (err) {
+                console.error("Load overview error:", err);
+            }
+        }
+
+        loadOverview();
+
+        function countWorkingDays(start, end) {
+            let count = 0;
+            let current = new Date(start);
+
+            while (current <= end) {
+                const day = current.getDay(); // 0 = Sunday, 6 = Saturday
+                if (day !== 0 && day !== 6) {
+                    count++;
+                }
+                current.setDate(current.getDate() + 1);
+            }
+            return count;
+        }
+
+
+        async function loadProgress() {
+            try {
+                const res = await fetch(`${api_user}/date`, {
+                    credentials: "include"
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success && data.data.length > 0) {
+                    const start = new Date(data.data[0].start);
+                    const end = new Date(data.data[0].end);
+                    const today = new Date();
+
+                    // นับวันทำงานทั้งหมด (ตัดเสาร์-อาทิตย์)
+                    const totalDays = countWorkingDays(start, end);
+
+                    // นับวันทำงานที่ผ่านไปแล้ว
+                    const passedDays = countWorkingDays(start, today);
+
+                    // คำนวณ %
+                    const percent = Math.min(Math.max((passedDays / totalDays) * 100, 0), 100);
+
+                    // อัปเดต progress bar
+                    const bar = document.getElementById("progressBar");
+                    bar.style.width = `${percent.toFixed(0)}%`;
+                    bar.innerText = `${percent.toFixed(0)}%`;
+
+                    // ข้อความใต้ bar
+                    document.getElementById("progressText").innerText =
+                        `ผ่านมาแล้ว ${passedDays} วัน จากทั้งหมด ${totalDays} วัน (ไม่นับเสาร์-อาทิตย์)`;
+                }
+            } catch (err) {
+                console.error("Load progress error:", err);
+            }
+        }
+
+
+        loadProgress();
+
+
+    </script>
+</body>
+
+</html>

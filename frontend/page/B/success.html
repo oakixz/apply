@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>อนุมัติการฝึกงาน</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: #f4f6f9;
+      color: #333;
+    }
+
+    main.content {
+      max-width: 1000px;
+      margin: 30px auto;
+      margin-left: 260px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      border-left: 5px solid #2563eb;
+      padding-left: 10px;
+      color: #1f2937;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    thead tr {
+      background: #2563eb;
+      color: #fff;
+      text-align: center;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    tbody tr:hover {
+      background: #f1f5f9;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      margin: 2px;
+      color: #fff;
+    }
+
+    .btn-wait {
+      background: #3b82f6;
+    }
+
+    .btn-approve {
+      background: #22c55e;
+    }
+
+    .btn-reject {
+      background: #ef4444;
+    }
+
+    .status-wait {
+      color: #3b82f6;
+      font-weight: bold;
+    }
+
+    .status-ok {
+      color: #22c55e;
+      font-weight: bold;
+    }
+
+    .status-no {
+      color: #ef4444;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="sidebar"></div>
+
+  <main class="content">
+    <h2>📋 อนุมัติการฝึกงาน</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ลำดับ</th>
+          <th>รหัสนักศึกษา</th>
+          <th>ชื่อ - นามสกุล</th>
+          <th>อีเมล</th>
+          <th>สถานะ</th>
+          <th>การจัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="approveTable"></tbody>
+    </table>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/frontend/config/path.js"></script>
+  <script src="/frontend/js/session.js"></script>
+  <script>
+    checkSession();
+
+    // โหลด sidebar
+    fetch("../../components/sidebarB.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar").innerHTML = html;
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebarMenu = document.querySelector(".sidebar");
+        if (menuToggle && sidebarMenu) {
+          menuToggle.addEventListener("click", () => {
+            sidebarMenu.classList.toggle("active");
+          });
+        }
+      })
+      .catch(err => console.error("Sidebar load error:", err));
+
+    // โหลดรายชื่อนักศึกษา
+    async function loadApproveTable() {
+      try {
+        const res = await fetch(`${api_auth}/student`, { credentials: "include" });
+        const result = await res.json();
+        const data = result.data || [];
+        const tbody = document.getElementById("approveTable");
+
+        tbody.innerHTML = data.map((s, i) => {
+          let statusText = "";
+          switch (s.success) {
+            case "0":
+              statusText = `<span class="status-wait">⏳ รออนุมัติ</span>`;
+              break;
+            case "1":
+              statusText = `<span class="status-ok">✅ อนุมัติ</span>`;
+              break;
+            case "2":
+              statusText = `<span class="status-no">❌ ไม่อนุมัติ</span>`;
+              break;
+            default:
+              statusText = "-";
+          }
+
+          return `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${s.iduser}</td>
+              <td>${s.fname} ${s.lname}</td>
+              <td>${s.email}</td>
+              <td>${statusText}</td>
+              <td>
+                <button class="btn btn-approve" onclick="updateSuccess(${s.userid},1)">อนุมัติ</button>
+                <button class="btn btn-reject" onclick="updateSuccess(${s.userid},2)">ไม่อนุมัติ</button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      } catch (err) {
+        console.error("Error loadApproveTable:", err);
+      }
+    }
+
+    async function updateSuccess(userid, val) {
+      try {
+        const res = await fetch(`${api_auth}/approveSuccess`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userid, success: val }),
+          credentials: "include"
+        });
+        const result = await res.json();
+
+        if (res.ok) {
+          Swal.fire("อัพเดทสำเร็จ ✅", "สถานะถูกแก้ไขแล้ว", "success");
+          loadApproveTable();
+        } else {
+          Swal.fire("ผิดพลาด ❌", result.message || "ไม่สามารถอัพเดทได้", "error");
+        }
+      } catch (err) {
+        console.error("Error updateSuccess:", err);
+        Swal.fire("ผิดพลาด ❌", "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์", "error");
+      }
+    }
+
+    loadApproveTable();
+  </script>
+</body>
+
+</html>

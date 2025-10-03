@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงบันทึก</title>
+    <!-- <link rel="stylesheet" href="/frontend/css/bar.css"> -->
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f6f7fb;
+            margin: 0;
+            color: #333;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h2,
+        h3 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            border-left: 5px solid #2563eb;
+            padding-left: 10px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            border-left: 5px solid #10b981;
+            padding-left: 10px;
+            margin-top: 30px;
+        }
+
+        /* ฟอร์ม */
+        form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 95%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            font-size: 1rem;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        /* ปุ่ม */
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn-submit {
+            background: #2563eb;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+            transform: scale(1.05);
+        }
+
+        .btn-edit {
+            background: #22c55e;
+            color: #fff;
+            margin: 2px;
+        }
+
+        .btn-edit:hover {
+            background: #16a34a;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: #fff;
+            margin: 2px;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        /* ตาราง */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        thead tr {
+            background: #2563eb;
+            color: #fff;
+            text-align: center;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        tbody tr:hover {
+            background: #f1f5f9;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="sidebar"></div>
+
+    <main>
+        <h2>📋 สายการฝึก</h2>
+        <form id="recordForm">
+            <div class="form-group">
+                <label>ชื่อสาย</label>
+                <input type="text" id="pname" name="pname" required>
+            </div>
+            <button type="submit" class="btn-submit">บันทึก</button>
+        </form>
+
+        <h3>📑 ตารางสายการฝึกที่มีในระบบ</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ลำดับ</th>
+                    <th>ชื่อสาย</th>
+                    <th>วันที่สร้าง</th>
+                    <th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="positionTable"></tbody>
+        </table>
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/frontend/config/path.js"></script>
+    <script src="/frontend/js/session.js"></script>
+
+    <script>
+        checkSession();
+
+        fetch("../../components/sidebarA.html")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("sidebar").innerHTML = html;
+
+                // ✅ ใส่ event หลังจากโหลดเสร็จ
+                const menuToggle = document.getElementById("menuToggle");
+                const sidebarMenu = document.querySelector(".sidebar");
+
+                if (menuToggle && sidebarMenu) {
+                    menuToggle.addEventListener("click", () => {
+                        sidebarMenu.classList.toggle("active");
+                    });
+                }
+            })
+            .catch(err => console.error("Sidebar load error:", err));
+
+
+        document.getElementById("recordForm").addEventListener("submit", async function (r) {
+            r.preventDefault();
+
+
+            const pname = document.getElementById("pname").value.trim();
+            console.log(pname)
+
+            const res = await fetch(`${api_auth}/pname`, {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pname })
+            })
+            const data = await res.json();
+
+            if (res.ok) {
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "บันทึกแล้ว",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    loadPositions();
+                })
+            }
+            else if (data.message == "สายนี้มีในระบบแล้ว") {
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "ข้อมูลซ้ำ",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+            else {
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "เกิดข้อผิดพลาด",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+
+        })
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString("th-TH", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+            });
+        }
+
+
+
+
+
+        async function loadPositions() {
+            const res = await fetch(`${api_auth}/position`, { credentials: "include" });
+            const data = await res.json();
+            console.log(data);
+
+            if (res.ok) {
+                const tbody = document.getElementById("positionTable");
+                tbody.innerHTML = "";
+
+                data.data.forEach((p, i) => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                <td>${i + 1}</td>
+                <td>${p.pname}</td>
+                <td>${formatDate(p.create_at)}</td>
+                <td>
+                    <button class="btn-edit" onclick='editid(${p.positionid})'>✏️ แก้ไข</button>
+                    <button class="btn-delete" onclick='delid(${p.positionid})'>🗑️ ลบ</button>
+                </td>
+                `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+
+        async function editid(id) {
+            window.location.href = `/frontend/page/A/edit.html?id=${id}`
+        }
+
+        async function delid(id) {
+            const confirm = await Swal.fire({
+                title: "ยืนยันการลบ?",
+                text: "คุณแน่ใจหรือไม่ที่จะลบสายนี้",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "ใช่, ลบเลย",
+                cancelButtonText: "ยกเลิก"
+            });
+
+            if (!confirm.isConfirmed) return;
+
+            const res = await fetch(`${api_auth}/del/${id}`, {
+                method: "DELETE"
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                Swal.fire("ลบแล้ว!", "ข้อมูลถูกลบเรียบร้อย", "success");
+                loadPositions();
+            } else {
+                Swal.fire("ผิดพลาด", data.message || "ไม่สามารถลบได้", "error");
+            }
+        }
+
+
+
+        loadPositions();
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เช็คอินเข้างาน</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .content {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e5e7eb;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #1f2937;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 15px;
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      border: 1px solid #e5e7eb;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: #2563eb;
+      color: #000000;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    tr:hover {
+      background: #f1f5f9;
+    }
+
+    /* ปุ่มสถานะ */
+    .status-btn {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      margin: 2px;
+    }
+
+    .status-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .status-btn.present {
+      background: #22c55e;
+      color: #fff;
+    }
+
+    .status-btn.present:hover {
+      background: #16a34a;
+    }
+
+    .status-btn.leave {
+      background: #f97316;
+      color: #fff;
+    }
+
+    .status-btn.leave:hover {
+      background: #ea580c;
+    }
+
+    .status-btn.absent {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .status-btn.absent:hover {
+      background: #dc2626;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      table {
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 8px;
+      }
+
+      .status-btn {
+        font-size: 12px;
+        padding: 5px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="sidebar"></div>
+
+  <main class="content">
+    <h1>📅 ตารางเช็คอินเข้างาน</h1>
+
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>ลำดับ</th>
+          <th>วันที่</th>
+          <th>ชื่อ</th>
+          <th>สถานะ</th>
+          <th>หมายเหตุ</th>
+          <th>บันทึก</th>
+        </tr>
+      </thead>
+      <tbody id="dateTable">
+        <!-- ตัวอย่างข้อมูล -->
+        <tr>
+          <td>1</td>
+          <td>2025-09-25</td>
+          <td>สมชาย ใจดี</td>
+          <td>-</td>
+          <td>-</td>
+          <td>
+            <button class="status-btn present">มา</button>
+            <button class="status-btn leave">ลา</button>
+            <button class="status-btn absent">ขาด</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/frontend/config/path.js"></script>
+  <script src="/frontend/js/session.js"></script>
+  <script src="/frontend/js/S/checkin.js"></script>
+  <script>
+    checkSession();
+
+    fetch("../../components/sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar").innerHTML = html;
+
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebarMenu = document.querySelector(".sidebar");
+
+        if (menuToggle && sidebarMenu) {
+          menuToggle.addEventListener("click", () => {
+            sidebarMenu.classList.toggle("active");
+          });
+        }
+      })
+      .catch(err => console.error("Sidebar load error:", err));
+
+    getdate();
+  </script>
+
+</body>
+
+</html>

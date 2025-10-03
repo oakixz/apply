@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>หน้าหลัก</title>
+  <!-- <link rel="stylesheet" href="/frontend/css/bar.css"> -->
+  <style>
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .card p {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .present {
+      border-top: 6px solid #4CAF50;
+    }
+
+    .leave {
+      border-top: 6px solid #FFC107;
+    }
+
+    .absent {
+      border-top: 6px solid #F44336;
+    }
+
+    /* ✅ Student Table */
+    table.student-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .student-table thead tr {
+      background: #2563eb;
+      color: #fff;
+      text-align: center;
+    }
+
+    .student-table th,
+    .student-table td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .student-table tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .student-table tbody tr:hover {
+      background: #f1f5f9;
+      transition: 0.2s;
+    }
+
+    /* ✅ ปุ่มในตาราง */
+    .table-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .table-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .table-btn.print {
+      background: #22c55e;
+      color: #fff;
+    }
+
+    .table-btn.detail {
+      background: #2563eb;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="sidebar"></div>
+
+  <main class="content">
+
+    <!-- ✅ Cards สรุปผล -->
+    <div class="stats">
+      <div class="card present">
+        <h3>เข้างาน</h3>
+        <p id="present-count">0</p>
+      </div>
+      <div class="card leave">
+        <h3>ลา</h3>
+        <p id="leave-count">0</p>
+      </div>
+      <div class="card absent">
+        <h3>สาย</h3>
+        <p id="late-count">0</p>
+      </div>
+    </div>
+
+    <!-- ✅ Progress bars -->
+    <div style="margin: 20px 0;">
+      <p><strong>สรุปเปอร์เซ็นต์การเข้าเรียน</strong></p>
+
+      <p>เข้างาน</p>
+      <div style="background:#eee;border-radius:6px;overflow:hidden;">
+        <div id="present-bar"
+          style="width:0%;background:#4CAF50;color:#fff;padding:6px 0;text-align:center;font-weight:600;">0%</div>
+      </div>
+
+      <p>ลา</p>
+      <div style="background:#eee;border-radius:6px;overflow:hidden;">
+        <div id="leave-bar"
+          style="width:0%;background:#FFC107;color:#000;padding:6px 0;text-align:center;font-weight:600;">0%</div>
+      </div>
+
+      <p>สาย</p>
+      <div style="background:#eee;border-radius:6px;overflow:hidden;">
+        <div id="late-bar"
+          style="width:0%;background:#F44336;color:#fff;padding:6px 0;text-align:center;font-weight:600;">0%</div>
+      </div>
+    </div>
+
+    <!-- ✅ Student Table -->
+    <h2 style="margin-top:30px;border-left:5px solid #2563eb;padding-left:8px;color:#1f2937;">📋 ข้อมูลนักศึกษา</h2>
+
+    <div class="no-print" style="margin:15px 0;display:flex;gap:15px;flex-wrap:wrap;">
+      <label>
+        รหัสนักศึกษา:
+        <input type="text" id="filterIduser" placeholder="ค้นหารหัส..."
+          style="padding:8px;border:1px solid #ccc;border-radius:6px;">
+      </label>
+      <label>
+        ชื่อ - นามสกุล:
+        <input type="text" id="filterName" placeholder="ค้นหาชื่อ..."
+          style="padding:8px;border:1px solid #ccc;border-radius:6px;">
+      </label>
+    </div>
+
+    <table class="student-table">
+      <thead>
+        <tr>
+          <th>ลำดับ</th>
+          <th>รหัสนักศึกษา</th>
+          <th>ชื่อ - นามสกุล</th>
+          <th>สถานที่ฝึกงาน</th>
+          <th>เริ่ม</th>
+          <th>สิ้นสุด</th>
+          <th>มา</th>
+          <th>ลา</th>
+          <th>สาย</th>
+          <th>Print ตารางเข้างาน</th>
+        </tr>
+      </thead>
+      <tbody id="studentTable">
+        <!-- ข้อมูลจาก JS -->
+      </tbody>
+    </table>
+
+
+  </main>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/frontend/config/path.js"></script>
+  <script src="/frontend/js/session.js"></script>
+
+  <script>
+    checkSession();
+
+    fetch("../../components/sidebarB.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar").innerHTML = html;
+
+        // ✅ ใส่ event หลังจากโหลดเสร็จ
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebarMenu = document.querySelector(".sidebar");
+
+        if (menuToggle && sidebarMenu) {
+          menuToggle.addEventListener("click", () => {
+            sidebarMenu.classList.toggle("active");
+          });
+        }
+      })
+      .catch(err => console.error("Sidebar load error:", err));
+  </script>
+  <script src="/frontend/js/B/dashboard.js"></script>
+
+</body>
+
+</html>

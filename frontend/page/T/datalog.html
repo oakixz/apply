@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f9;
+      color: #333;
+    }
+
+    main.content {
+      max-width: 1200px;
+      margin: 30px auto;
+      margin-left   : 260px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      border-left: 5px solid #2563eb;
+      padding-left: 10px;
+      color: #f9fcff;
+    }
+
+    /* ✅ Filter */
+    .no-print {
+      margin: 15px 0;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .no-print label {
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .no-print input {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      min-width: 180px;
+      margin-left: 6px;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    .no-print input:focus {
+      border-color: #2563eb;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+
+    /* ✅ Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    thead tr {
+      background: #2563eb;
+      color: #fff;
+      text-align: center;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    tbody tr:hover {
+      background: #f1f5f9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="sidebar"></div>
+
+  <main class="content">
+    <h2>📋 ข้อมูลนักศึกษา</h2>
+
+    <!-- ✅ Filter -->
+    <div class="no-print">
+      <label>
+        รหัสนักศึกษา:
+        <input type="text" id="filterIduser" placeholder="ค้นหารหัส...">
+      </label>
+      <label>
+        ชื่อ - นามสกุล:
+        <input type="text" id="filterName" placeholder="ค้นหาชื่อ...">
+      </label>
+    </div>
+
+    <!-- ✅ Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>ลำดับ</th>
+          <th>รหัสนักศึกษา</th>
+          <th>ชื่อ - นามสกุล</th>
+          <th>สายการฝึก</th>
+          <th>สถานที่ฝึกงาน</th>
+          <th>เริ่ม</th>
+          <th>สิ้นสุด</th>
+          <th>มา</th>
+          <th>ลา</th>
+          <th>สาย</th>
+          <th>Print ตารางเข้างาน</th>
+        </tr>
+      </thead>
+      <tbody id="studentTable"></tbody>
+    </table>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/frontend/config/path.js"></script>
+  <script src="/frontend/js/session.js"></script>
+
+  <script>
+    checkSession();
+
+    fetch("../../components/sidebarT.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar").innerHTML = html;
+
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebarMenu = document.querySelector(".sidebar");
+
+        if (menuToggle && sidebarMenu) {
+          menuToggle.addEventListener("click", () => {
+            sidebarMenu.classList.toggle("active");
+          });
+        }
+      })
+      .catch(err => console.error("Sidebar load error:", err));
+  </script>
+  <script src="/frontend/js/T/datalog.js"></script>
+</body>
+
+</html>

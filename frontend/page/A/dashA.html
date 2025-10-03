@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้าหลัก</title>
+    <!-- <link rel="stylesheet" href="/frontend/css/bar.css"> -->
+    <style>
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .card p {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #111;
+        }
+
+        .teacher {
+            border-top: 6px solid #2563eb;
+
+        }
+
+        .mentor {
+            border-top: 6px solid #10b981;
+
+        }
+
+        .student {
+            border-top: 6px solid #f59e0b;
+
+        }
+
+        /* Zebra Row */
+        #userTable tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        /* Hover Effect */
+        #userTable tr:hover {
+            background: #f1f5f9;
+        }
+
+        /* Cell Padding */
+        #userTable td,
+        #userTable th {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebar"></div>
+
+    <main class="content">
+
+        <h2 style="margin:20px;">📊 Overview</h2>
+
+        <div class="overview-cards">
+            <div class="card teacher">
+                <h3>อาจารย์</h3>
+                <p id="T">0</p>
+            </div>
+            <div class="card mentor">
+                <h3>พี่เลี้ยง</h3>
+                <p id="B">0</p>
+            </div>
+            <div class="card student">
+                <h3>นักศึกษา</h3>
+                <p id="S">0</p>
+            </div>
+        </div>
+
+        <div style="margin: 20px;">
+            <input type="text" id="searchInput" placeholder="ค้นหาชื่อ / อีเมล / รหัสผู้ใช้"
+                style="padding:6px;width:250px;border-radius:6px;border:1px solid #ccc;">
+            <select id="roleFilter" style="padding:6px;border-radius:6px;border:1px solid #ccc;margin-left:8px;">
+                <option value="">ตำแหน่งทั้งหมด</option>
+                <option value="อาจารย์">อาจารย์</option>
+                <option value="พี่เลี้ยง">พี่เลี้ยง</option>
+                <option value="นักศึกษา">นักศึกษา</option>
+            </select>
+        </div>
+
+
+        <h2 style="margin:20px;">📋 รายชื่อทั้งหมด</h2>
+
+        <table style="
+  width:95%;
+  margin:20px auto;
+  border-collapse: collapse;
+  background:#fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+">
+            <thead>
+                <tr style="background:#2563eb; color:#fff; text-align:center;">
+                    <th style="padding:12px;">ลำดับ</th>
+                    <th>รหัสผู้ใช้</th>
+                    <th>ชื่อ - นามสกุล</th>
+                    <th>อีเมล</th>
+                    <th>บทบาท</th>
+                    <th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="userTable" style="text-align:center;">
+                <!-- JS เติมข้อมูล -->
+            </tbody>
+        </table>
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/frontend/config/path.js"></script>
+    <script src="/frontend/js/session.js"></script>
+
+    <script>
+        checkSession();
+
+        fetch("../../components/sidebarA.html")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("sidebar").innerHTML = html;
+
+                // ✅ ใส่ event หลังจากโหลดเสร็จ
+                const menuToggle = document.getElementById("menuToggle");
+                const sidebarMenu = document.querySelector(".sidebar");
+
+                if (menuToggle && sidebarMenu) {
+                    menuToggle.addEventListener("click", () => {
+                        sidebarMenu.classList.toggle("active");
+                    });
+                }
+            })
+            .catch(err => console.error("Sidebar load error:", err));
+    </script>
+    <script src="/frontend/js/A/dashA.js"></script>
+</body>
+
+</html>

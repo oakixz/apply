@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <title>รายละเอียดนักศึกษา</title>
+    <style>
+        
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background: #f4f4f4;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        @media print {
+
+            .btn,
+            .no-print {
+                display: none;
+            }
+
+            /* ซ่อนปุ่มเวลา print */
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>📋 ตารางการเข้าฝึกงาน</h2>
+    <div class="no-print">
+        <!-- <button class="btn" onclick="goBack()">⬅️ ย้อนกลับ</button> -->
+        <label>จากวันที่: <input type="date" id="startDate"></label>
+        <label>ถึงวันที่: <input type="date" id="endDate"></label>
+        <button class="btn" onclick="applyFilter()">🔍 กรอง</button>
+        <button class="btn" onclick="printTable()">🖨️ Print</button>
+    </div>
+
+    <div id="printArea">
+        <table>
+            <thead>
+                <tr>
+                    <th>ลำดับ</th>
+                    <th>วันที่</th>
+                    <th>สถานะ</th>
+                    <th>หมายเหตุ</th>
+                    <th>อนุมัติ</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceTable">
+                <!-- JS เติมข้อมูล -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="/frontend/config/path.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const userid = params.get("userid");
+
+        let allData = []; // เก็บข้อมูลทั้งหมดเผื่อกรองทีหลัง
+
+        async function loadAttendance() {
+            try {
+                const res = await fetch(`${api_teacher}/listtable?userid=${userid}`, {
+                    credentials: "include",
+                });
+                const data = await res.json();
+
+                allData = data.data || [];
+                renderTable(allData);
+            } catch (err) {
+                console.error("Error loadAttendance:", err);
+            }
+        }
+
+        function renderTable(rows) {
+            const tbody = document.getElementById("attendanceTable");
+            tbody.innerHTML = "";
+
+            if (!rows || rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5">ไม่มีข้อมูล</td></tr>`;
+                return;
+            }
+
+            rows.forEach((row, index) => {
+                let approveText = "";
+                switch (row.approve) {
+                    case "Y":
+                        approveText = "✅ อนุมัติ";
+                        break;
+                    case "N":
+                        approveText = "❌ ไม่อนุมัติ";
+                        break;
+                    case "P":
+                    default:
+                        approveText = "⌛ รอดำเนินการ";
+                }
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${new Date(row.date).toLocaleDateString("th-TH")}</td>
+      <td>${row.status}</td>
+      <td>${row.note || "-"}</td>
+      <td>${approveText}</td>
+    `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function applyFilter() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+
+            if (!startDate && !endDate) {
+                renderTable(allData); // ถ้าไม่ได้เลือกกรอง แสดงทั้งหมด
+                return;
+            }
+
+            const filtered = allData.filter(row => {
+                const rowDate = new Date(row.date);
+                const from = startDate ? new Date(startDate) : null;
+                const to = endDate ? new Date(endDate) : null;
+
+                if (from && rowDate < from) return false;
+                if (to && rowDate > to) return false;
+                return true;
+            });
+
+            renderTable(filtered);
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function printTable() {
+            window.print();
+        }
+
+        loadAttendance();
+
+    </script>
+
+</body>
+
+</html>

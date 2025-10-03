@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>อนุมัติการเข้างาน</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f9;
+    }
+
+    main.content {
+      max-width: 1100px;
+      margin: 30px auto;
+      margin-left: 260px;
+      /* ✅ ขยับไปทางขวา (กว้างพอ ๆ กับ sidebar) */
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+
+    h2 {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      border-left: 5px solid #2563eb;
+      padding-left: 10px;
+      color: #1f2937;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    thead tr {
+      background: #2563eb;
+      color: #fff;
+      text-align: center;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    tbody tr:hover {
+      background: #f1f5f9;
+    }
+
+    /* ปุ่ม */
+    .btn-approve,
+    .btn-reject {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      margin: 2px;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .btn-approve {
+      background: #22c55e;
+      color: #fff;
+    }
+
+    .btn-approve:hover {
+      background: #16a34a;
+      transform: scale(1.05);
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .btn-reject:hover {
+      background: #dc2626;
+      transform: scale(1.05);
+    }
+
+    /* Badge */
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge.approved {
+      background: #22c55e;
+      color: #fff;
+    }
+
+    .badge.pending {
+      background: #f97316;
+      color: #fff;
+    }
+
+    .badge.rejected {
+      background: #ef4444;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="sidebar"></div>
+
+  <main class="content">
+    <h2>📋 ตารางอนุมัติการเข้างาน</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ลำดับ</th>
+          <th>ชื่อ-นามสกุล</th>
+          <th>วันที่</th>
+          <th>สถานะ</th>
+          <th>หมายเหตุ</th>
+          <th>การอนุมัติ</th>
+          <th>จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="approveTable">
+        <!-- ตัวอย่างข้อมูล -->
+        <tr>
+          <td>1</td>
+          <td>สมชาย ใจดี</td>
+          <td>23/09/2568</td>
+          <td>present</td>
+          <td>-</td>
+          <td><span class="badge approved">✔ อนุมัติ</span></td>
+          <td>
+            <button class="btn-approve">อนุมัติ</button>
+            <button class="btn-reject">ไม่อนุมัติ</button>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>สมหญิง ดีงาม</td>
+          <td>24/09/2568</td>
+          <td>late</td>
+          <td>-</td>
+          <td><span class="badge pending">⏳ รออนุมัติ</span></td>
+          <td>
+            <button class="btn-approve">อนุมัติ</button>
+            <button class="btn-reject">ไม่อนุมัติ</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/frontend/config/path.js"></script>
+  <script src="/frontend/js/session.js"></script>
+  <script src="/frontend/js/B/approve.js"></script>
+
+  <script>
+    checkSession();
+
+    fetch("../../components/sidebarB.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar").innerHTML = html;
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebarMenu = document.querySelector(".sidebar");
+        if (menuToggle && sidebarMenu) {
+          menuToggle.addEventListener("click", () => {
+            sidebarMenu.classList.toggle("active");
+          });
+        }
+      })
+      .catch(err => console.error("Sidebar load error:", err));
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แก้ไขสายการฝึก</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f6f7fb;
+      margin: 0;
+    }
+
+    main {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 90%;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-submit {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .btn-back {
+      background: #aaa;
+      margin-left: 10px;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h2>✏️ แก้ไขสายการฝึก</h2>
+    <form id="editForm">
+      <div class="form-group">
+        <label>ชื่อสาย</label>
+        <input type="text" id="pname" name="pname" required>
+      </div>
+      <button type="submit" class="btn-submit">บันทึก</button>
+      <button type="button" class="btn-back" onclick="history.back()">ย้อนกลับ</button>
+    </form>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/frontend/config/path.js"></script>
+  <script src="/frontend/js/session.js"></script>
+  <script>
+    
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    async function loadData() {
+      try {
+        const res = await fetch(`${api_auth}/position/${id}`);
+        const data = await res.json();
+
+        if (res.ok && data.data) {
+          document.getElementById("pname").value = data.data.pname;
+        } else {
+          Swal.fire("ผิดพลาด", "ไม่พบข้อมูล", "error");
+        }
+      } catch (err) {
+        console.error("Error loadData:", err);
+      }
+    }
+
+    document.getElementById("editForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const pname = document.getElementById("pname").value.trim();
+
+      const res = await fetch(`${api_auth}/pname/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pname })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        Swal.fire("สำเร็จ", "แก้ไขข้อมูลเรียบร้อย ✅", "success")
+          .then(() => window.location.href = "/frontend/page/A/Jobposition.html");
+      } else {
+        Swal.fire("ผิดพลาด", data.message || "ไม่สามารถแก้ไขได้", "error");
+      }
+    });
+
+
+    
+
+
+
+
+    loadData();
+  </script>
+</body>
+
+</html>

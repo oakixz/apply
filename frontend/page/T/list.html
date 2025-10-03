@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- <link rel="stylesheet" href="/frontend/css/bar.css"> -->
+    <style>
+        h1 {
+            margin-top: 40px;
+            font-size: 1.4rem;
+            border-left: 5px solid #16a34a;
+            padding-left: 10px;
+            color: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        main.content {
+            max-width: 1000px;
+            margin: 30px auto;
+            margin-left: 260px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+
+
+        /* ✅ Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        thead tr {
+            background: #2563eb;
+            color: #fff;
+            text-align: center;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        tbody tr:hover {
+            background: #f1f5f9;
+        }
+
+        /* ✅ Responsive */
+        @media (max-width: 768px) {
+            main.content {
+                margin-left: 0;
+                padding: 10px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th,
+            td {
+                padding: 8px;
+            }
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebar"></div>
+
+
+
+    <main class="content">
+        <h2 id="name">📋 ตารางการเข้าฝึกงาน</h2>
+        <table id="listTable" border="1" cellspacing="0" cellpadding="6">
+            <thead>
+                <tr>
+                    <th>ลำดับ</th>
+                    <th>วันที่</th>
+                    <th>สถานะ</th>
+                    <th>หมายเหตุ</th>
+                    <th>อนุมัติ</th>
+                </tr>
+            </thead>
+            <tbody id="listTableBody">
+
+            </tbody>
+        </table>
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/frontend/config/path.js"></script>
+    <script src="/frontend/js/session.js"></script>
+
+    <script>
+        checkSession();
+
+        fetch("../../components/sidebarT.html")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("sidebar").innerHTML = html;
+
+                // ✅ ใส่ event หลังจากโหลดเสร็จ
+                const menuToggle = document.getElementById("menuToggle");
+                const sidebarMenu = document.querySelector(".sidebar");
+
+                if (menuToggle && sidebarMenu) {
+                    menuToggle.addEventListener("click", () => {
+                        sidebarMenu.classList.toggle("active");
+                    });
+                }
+            })
+            .catch(err => console.error("Sidebar load error:", err));
+    </script>
+
+    <script src="/frontend/js/T/list.js"></script>
+
+
+</body>
+
+</html>
