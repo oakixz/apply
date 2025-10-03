@@ -15,7 +15,7 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:5000", "http://127.0.0.1:5500", "http://localhost"],
+  origin: ["https://apply-1-jtmy.onrender.com"],
   credentials: true
 }));
 
